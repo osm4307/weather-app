@@ -1,5 +1,5 @@
 // API 키와 기본 URL
-const API_KEY = '0ed2a6686c14c1540420a652defd0d8b';
+const API_KEY = 'apikey';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
 // 날씨 상태에 따른 아이콘 매핑
