@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>날씨 앱 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-case {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 3px;
+        }
+        .test-result {
+            margin-top: 5px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .pass {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .fail {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>날씨 앱 테스트</h1>
+    
+    <div class="test-section">
+        <h2>1. 기본 기능 테스트</h2>
+        <div class="test-case">
+            <h3>현재 날씨 정보 표시</h3>
+            <button onclick="testCurrentWeather()">테스트 실행</button>
+            <div id="currentWeatherResult" class="test-result"></div>
+        </div>
+        <div class="test-case">
+            <h3>5일 예보 표시</h3>
+            <button onclick="testForecast()">테스트 실행</button>
+            <div id="forecastResult" class="test-result"></div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. 오프라인 기능 테스트</h2>
+        <div class="test-case">
+            <h3>Service Worker 등록</h3>
+            <button onclick="testServiceWorker()">테스트 실행</button>
+            <div id="serviceWorkerResult" class="test-result"></div>
+        </div>
+        <div class="test-case">
+            <h3>오프라인 페이지 표시</h3>
+            <button onclick="testOfflinePage()">테스트 실행</button>
+            <div id="offlinePageResult" class="test-result"></div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. UI/UX 테스트</h2>
+        <div class="test-case">
+            <h3>로딩 상태 표시</h3>
+            <button onclick="testLoadingState()">테스트 실행</button>
+            <div id="loadingStateResult" class="test-result"></div>
+        </div>
+        <div class="test-case">
+            <h3>에러 메시지 표시</h3>
+            <button onclick="testErrorMessage()">테스트 실행</button>
+            <div id="errorMessageResult" class="test-result"></div>
+        </div>
+    </div>
+
+    <script>
+        // 테스트 결과 표시 함수
+        function showResult(elementId, passed, message) {
+            const element = document.getElementById(elementId);
+            element.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            element.textContent = message;
+        }
+
+        // 현재 날씨 정보 테스트
+        async function testCurrentWeather() {
+            try {
+                const response = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=0ed2a6686c14c1540420a652defd0d8b&units=metric');
+                const data = await response.json();
+                
+                if (data.main && data.weather) {
+                    showResult('currentWeatherResult', true, '현재 날씨 정보 표시 성공');
+                } else {
+                    showResult('currentWeatherResult', false, '현재 날씨 정보 표시 실패');
+                }
+            } catch (error) {
+                showResult('currentWeatherResult', false, `에러 발생: ${error.message}`);
+            }
+        }
+
+        // 5일 예보 테스트
+        async function testForecast() {
+            try {
+                const response = await fetch('https://api.openweathermap.org/data/2.5/forecast?q=Seoul&appid=0ed2a6686c14c1540420a652defd0d8b&units=metric');
+                const data = await response.json();
+                
+                if (data.list && data.list.length > 0) {
+                    showResult('forecastResult', true, '5일 예보 표시 성공');
+                } else {
+                    showResult('forecastResult', false, '5일 예보 표시 실패');
+                }
+            } catch (error) {
+                showResult('forecastResult', false, `에러 발생: ${error.message}`);
+            }
+        }
+
+        // Service Worker 테스트
+        async function testServiceWorker() {
+            try {
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    showResult('serviceWorkerResult', true, 'Service Worker 등록 성공');
+                } else {
+                    showResult('serviceWorkerResult', false, 'Service Worker를 지원하지 않는 브라우저');
+                }
+            } catch (error) {
+                showResult('serviceWorkerResult', false, `에러 발생: ${error.message}`);
+            }
+        }
+
+        // 오프라인 페이지 테스트
+        async function testOfflinePage() {
+            try {
+                const response = await fetch('/offline.html');
+                if (response.ok) {
+                    showResult('offlinePageResult', true, '오프라인 페이지 로드 성공');
+                } else {
+                    showResult('offlinePageResult', false, '오프라인 페이지 로드 실패');
+                }
+            } catch (error) {
+                showResult('offlinePageResult', false, `에러 발생: ${error.message}`);
+            }
+        }
+
+        // 로딩 상태 테스트
+        function testLoadingState() {
+            const loadingElement = document.querySelector('.loading');
+            if (loadingElement) {
+                showResult('loadingStateResult', true, '로딩 상태 표시 성공');
+            } else {
+                showResult('loadingStateResult', false, '로딩 상태 표시 실패');
+            }
+        }
+
+        // 에러 메시지 테스트
+        function testErrorMessage() {
+            const errorElement = document.querySelector('.error-message');
+            if (errorElement) {
+                showResult('errorMessageResult', true, '에러 메시지 표시 성공');
+            } else {
+                showResult('errorMessageResult', false, '에러 메시지 표시 실패');
+            }
+        }
+    </script>
+</body>
+</html> 
