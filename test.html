@@ -99,7 +99,7 @@
         // 현재 날씨 정보 테스트
         async function testCurrentWeather() {
             try {
-                const response = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=0ed2a6686c14c1540420a652defd0d8b&units=metric');
+                const response = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=apikey&units=metric');
                 const data = await response.json();
                 
                 if (data.main && data.weather) {
@@ -115,7 +115,7 @@
         // 5일 예보 테스트
         async function testForecast() {
             try {
-                const response = await fetch('https://api.openweathermap.org/data/2.5/forecast?q=Seoul&appid=0ed2a6686c14c1540420a652defd0d8b&units=metric');
+                const response = await fetch('https://api.openweathermap.org/data/2.5/forecast?q=Seoul&appid=apikey&units=metric');
                 const data = await response.json();
                 
                 if (data.list && data.list.length > 0) {
